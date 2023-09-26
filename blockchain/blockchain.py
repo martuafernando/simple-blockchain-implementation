@@ -6,13 +6,12 @@ class Blockchain:
   def __init__(self) -> None:
     self.chain = []
     
-    self.create_block(proof=1, curr_hash="", data=None)
+    self.create_block(proof=1, data=None)
     
   def create_block(
     self,
     proof,
     prev_hash = "0",
-    curr_hash = None,
     data=None,
   ):
     block = {
@@ -21,8 +20,10 @@ class Blockchain:
       "proof": proof,
       "data": data,
       "prev_hash": prev_hash,
-      "hash": curr_hash
     }
+    
+    block['hash'] = self.get_hash(block=block)
+    
     self.chain.append(block)
     return block
   

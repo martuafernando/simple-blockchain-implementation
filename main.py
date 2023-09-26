@@ -10,8 +10,8 @@ def mine_block():
   prev_block = blockchain.get_latest_block()
   prev_proof = prev_block['proof']
   proof = blockchain.proof_of_work(prev_proof)
-  prev_hash = blockchain.get_hash(prev_block)
-  block = blockchain.create_block(proof, prev_hash)
+  prev_hash = prev_block['hash']
+  block = blockchain.create_block(proof=proof, prev_hash=prev_hash)
   block['hash'] = blockchain.get_hash(block)
   
   response = {
@@ -41,6 +41,39 @@ def valid():
     else:
         response = {'message': 'The Blockchain is not valid.'}
     return jsonify(response), 200
+
+@app.route('/block', methods=['POST'])
+def post_block():
+  content_type = request.headers.get('Content-Type')
+  if (content_type != 'application/json'):
+    return 'Content-Type not supported!'
+  
+  data = request.json
+  
+  if not (('data' in data)):
+    return jsonify({
+    "message": "data is required"
+  }), 200  
+  
+  
+  prev_block = blockchain.get_latest_block()
+  prev_proof = prev_block['proof']
+  proof = blockchain.proof_of_work(prev_proof)
+  prev_hash = prev_block['hash']
+  block = blockchain.create_block(proof=proof, prev_hash=prev_hash, data=data['data'])
+  block['hash'] = blockchain.get_hash(block)
+  
+  response = {
+    'message': 'block created successfully',
+    'index': block['id_block'],
+    'timestamp': block['timestamp'],
+    'data': str(data['data']),
+    'proof': block['proof'],
+    'previous_hash': block['prev_hash'],
+    'hash': block['hash']
+  }
+  
+  return jsonify(response), 200
 
 @app.route('/block', methods=['PUT'])
 def modify_block():
