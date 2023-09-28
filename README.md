@@ -4,16 +4,44 @@ Simple implementation of Blockchain for Blockchain course
 ## API Endpoint
 
 ### GET /mine_block
+Make a block without data
 
-### GET /get_chain
+### GET /chain
+Show the chain of the block
 
 ### GET /valid
-### PUT /block
-#### Body
+Show chain validity
+
+### POST /block
+
+Make a block with data
+
+
+**Request Headers**:
+
+- Content-Type: application/json
+
+**Request Body**:
+
 | Key      | Type   | Default | Required | Description      |
 | -------- | ------ | ------- | -------- | ---------------- |
-| id       | String |         | Yes      | Id of the block  |
-| hash     | String |         | Yes      | New hash for the block|
+| data     | String |         | Yes      | New data for the block|
+### PUT /block/:id
+
+Modify block data
+
+**Request Headers**:
+
+- Content-Type: application/json
+
+**Request Body**:
+
+| Key      | Type   | Default | Required | Description      |
+| -------- | ------ | ------- | -------- | ---------------- |
+| data     | String |         | No      | New data for the block|
+| hash     | String |         | No      | New hash for the block|
+
+> At least one of 'hash' or 'data' must be provided
 
 ## Getting Started
 
