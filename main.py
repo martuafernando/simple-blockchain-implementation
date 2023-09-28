@@ -46,7 +46,9 @@ def valid():
 def post_block():
   content_type = request.headers.get('Content-Type')
   if (content_type != 'application/json'):
-    return 'Content-Type not supported!'
+    return jsonify({
+      "message": "Content-Type not supported!"
+    }), 400
   
   data = request.json
   
@@ -75,38 +77,38 @@ def post_block():
   
   return jsonify(response), 200
 
-@app.route('/block', methods=['PUT'])
-def modify_block():
+@app.route('/block/<int:id>', methods=['PUT'])
+def modify_block(id):
   content_type = request.headers.get('Content-Type')
-  if (content_type == 'application/json'):
-    data = request.json
-    if not (('id' in data)):
-      return jsonify({
-        "message": "id and hash are required"
-      }), 400
-    
-    
-    if (data['id'] >= len(blockchain.chain)):
-      return jsonify({
-        "message": "block not found"
-      }), 400
-    
-    if not (('hash' in data) or 'data' in data):
-      return jsonify({
-      "message": "must provide hash or data"
-    }), 200  
-    
-    if 'hash' in data:
-      blockchain.modify_block_hash(data['id'], data['hash'])
-    if 'data' in data:
-      blockchain.modify_block_data(data['id'], data['data'])
-    
+  if (content_type != 'application/json'):
     return jsonify({
-      "message": "block has modified successfully"
-    }), 200
-      
-    
-  else:
-    return 'Content-Type not supported!'
+      "message": "Content-Type not supported!"
+    }), 400
+
+  data = request.json
+  if not id:
+    return jsonify({
+      "message": "id and hash are required"
+    }), 400
+  
+  
+  if (id >= len(blockchain.chain)):
+    return jsonify({
+      "message": "block not found"
+    }), 400
+  
+  if not (('hash' in data) or 'data' in data):
+    return jsonify({
+    "message": "must provide hash or data"
+  }), 200  
+  
+  if 'hash' in data:
+    blockchain.modify_block_hash(id, data['hash'])
+  if 'data' in data:
+    blockchain.modify_block_data(id, data['data'])
+  
+  return jsonify({
+    "message": "block has modified successfully"
+  }), 200
 
 app.run(host='127.0.0.1', port=5000)

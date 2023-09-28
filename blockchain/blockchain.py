@@ -55,7 +55,13 @@ class Blockchain:
     return new_proof
   
   def get_hash(self, block):
-    encoded_block = json.dumps(block, sort_keys=True).encode()
+    encoded_block = json.dumps({
+      "id_block": block['id_block'],
+      "timestamp": block['timestamp'],
+      "proof": block['proof'],
+      "data": block['data'],
+      "prev_hash": block['prev_hash'],
+    }, sort_keys=True).encode()
     return hashlib.sha256(encoded_block).hexdigest()
   
   def is_chain_valid(self):
@@ -65,7 +71,7 @@ class Blockchain:
     while i < len(self.chain):
       block = self.chain[i]
       
-      if block['prev_hash'] != self.get_hash(prev_block):
+      if block['prev_hash'] != self.get_hash(prev_block) or block['prev_hash'] != prev_block['hash']:
         return False
       
       prev_proof = prev_block['proof']
@@ -74,11 +80,8 @@ class Blockchain:
         str(proof**2 - prev_proof**2).encode()
       ).hexdigest()
       
-      if hash_operation[:4] != '0000':
-                return False
+      if hash_operation[:4] != '0000': return False
       prev_block = block
       i += 1
       
     return True
-      
-      
